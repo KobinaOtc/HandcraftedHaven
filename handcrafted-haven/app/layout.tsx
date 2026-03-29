@@ -5,7 +5,6 @@ export const metadata: Metadata = {
     title: 'Handcrafted Haven',
     description: 'A platform for artisans to showcase and sell their unique handcrafted items.',
 }
-
 export default function RootLayout({
     children,
 }: {
