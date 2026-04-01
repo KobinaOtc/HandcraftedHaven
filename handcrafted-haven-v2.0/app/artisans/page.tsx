@@ -1,0 +1,60 @@
+import { artisans } from "@/lib/data";
+import ArtisanCard from "@/components/ui/ArtisanCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Artisans",
+  description: "Meet the talented artisans behind Handcrafted Haven's unique pieces.",
+};
+
+export default function ArtisansPage() {
+  return (
+    <div className="min-h-screen bg-cream-50 pt-20">
+      {/* Header */}
+      <div className="relative bg-bark py-20 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-terracotta-500 blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-forest-500 blur-2xl translate-x-1/2 translate-y-1/2" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center">
+          <p className="font-body text-xs font-600 text-terracotta-300 uppercase tracking-widest mb-4">
+            The Makers
+          </p>
+          <h1 className="font-display text-5xl md:text-6xl font-700 text-cream-50 mb-5">
+            Meet Our Artisans
+          </h1>
+          <p className="font-body text-base text-cream-200/70 max-w-xl mx-auto">
+            Behind every piece is a person with a story. Discover the skilled
+            craftspeople who pour their hearts into every creation.
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {artisans.map((artisan) => (
+            <ArtisanCard key={artisan.id} artisan={artisan} />
+          ))}
+        </div>
+
+        {/* CTA to sell */}
+        <div className="mt-16 bg-terracotta-50 border border-terracotta-200 rounded-3xl p-12 text-center">
+          <span className="text-4xl block mb-5">🏺</span>
+          <h2 className="font-display text-3xl font-700 text-bark mb-3">
+            Are you an artisan?
+          </h2>
+          <p className="font-body text-base text-stone-mid max-w-md mx-auto mb-8">
+            Join our community of makers. Reach thousands of customers who
+            value handcrafted quality.
+          </p>
+          <a
+            href="/sell"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-terracotta-500 text-white font-500 rounded-full hover:bg-terracotta-600 transition-colors"
+          >
+            Start Selling
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
