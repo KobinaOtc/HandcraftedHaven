@@ -1,0 +1,9 @@
+MONGODB_URI=mongodb+srv://freedommk:<db_freedommk>@cluster0.oeyxbjf.mongodb.net/
+
+# NextAuth
+NEXTAUTH_SECRET=a78150f1c64688aa5f2bb6f97558038349bedd62d8915ed45421ddebd345faef
+NEXTAUTH_URL=http://localhost:3000
+
+# Cloudinary (optional for now)
+CLOUDINARY_CLOUD_NAME=dok9vurrf
+CLOUDINARY_API_KEY=786279318884563
