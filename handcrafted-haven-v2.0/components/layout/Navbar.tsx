@@ -16,6 +16,17 @@ export default function Navbar() {
   const { itemCount, toggleCart } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [savedSearch, setSavedSearch] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSavedSearch(localStorage.getItem("marketplaceSearch") ?? "");
+    }
+  }, []);
+
+  const searchHref = savedSearch
+    ? `/marketplace?q=${encodeURIComponent(savedSearch)}`
+    : "/marketplace";
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -66,12 +77,13 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-3">
-              <button
+              <Link
+                href={searchHref}
                 className="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-cream-100 transition-colors"
-                aria-label="Search"
+                aria-label="Open marketplace search"
               >
                 <Search className="w-5 h-5 text-bark" strokeWidth={1.5} />
-              </button>
+              </Link>
 
               <button
                 onClick={toggleCart}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef, FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { products, categories } from "@/lib/data";
 import ProductCard from "@/components/ui/ProductCard";
@@ -15,11 +16,53 @@ const sortOptions = [
 ];
 
 export default function MarketplacePage() {
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const querySearch = searchParams.get("q") ?? "";
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [search, setSearch] = useState(querySearch);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sort, setSort] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+
+  useEffect(() => {
+    if (querySearch) {
+      setSearch(querySearch);
+    } else if (typeof window !== "undefined") {
+      const storedSearch = localStorage.getItem("marketplaceSearch") ?? "";
+      if (storedSearch) {
+        setSearch(storedSearch);
+      }
+    }
+  }, [querySearch]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (search.trim()) {
+        localStorage.setItem("marketplaceSearch", search.trim());
+      } else {
+        localStorage.removeItem("marketplaceSearch");
+      }
+    }
+  }, [search]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const params = new URLSearchParams();
+    if (search.trim()) {
+      params.set("q", search.trim());
+    }
+
+    const queryString = params.toString();
+    router.push(`/marketplace${queryString ? `?${queryString}` : ""}`);
+  };
 
   const filtered = useMemo(() => {
     let result = [...products];
@@ -78,19 +121,28 @@ export default function MarketplacePage() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         {/* Search + Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
+          <form onSubmit={handleSearchSubmit} className="relative flex-1">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-mid"
               strokeWidth={1.5}
             />
             <input
+              ref={inputRef}
+              autoFocus
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products, artisans..."
-              className="w-full pl-11 pr-4 py-3 bg-white border border-cream-200 rounded-full font-body text-sm text-bark placeholder-stone-mid focus:outline-none focus:border-terracotta-400 transition-colors"
+              className="w-full pl-11 pr-12 py-3 bg-white border border-cream-200 rounded-full font-body text-sm text-bark placeholder-stone-mid focus:outline-none focus:border-terracotta-400 transition-colors"
             />
-          </div>
+            <button
+              type="submit"
+              aria-label="Submit search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-terracotta-500 text-white hover:bg-terracotta-600 transition-colors"
+            >
+              <Search className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          </form>
 
           <div className="flex gap-3">
             <button
