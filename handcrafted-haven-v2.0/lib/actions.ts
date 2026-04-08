@@ -1,12 +1,13 @@
+// in lib/actions.ts
 'use server';
 
 import { SignupFormSchema, FormState } from '@/lib/definitions';
 import { redirect } from 'next/navigation';
-// import { db } from '@/lib/db'; // Placeholder for your actual DB connection
-// import bcrypt from 'bcrypt';
+import { sql } from '@vercel/postgres';
+import bcrypt from 'bcrypt';
 
-export async function registerArtisan(state: FormState, formData: FormData) {
-  // 1. Validate form fields using Zod
+// Note the added : Promise<FormState> to enforce strict typing
+export async function registerArtisan(state: FormState, formData: FormData): Promise<FormState> {
   const validatedFields = SignupFormSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -15,28 +16,29 @@ export async function registerArtisan(state: FormState, formData: FormData) {
     location: formData.get('location'),
   });
 
-  // 2. If form validation fails, return errors early
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing or Invalid Fields. Please check the errors above.',
     };
   }
 
   const { name, email, password, specialty, location } = validatedFields.data;
 
   try {
-    // 3. Logic to check if user exists, hash password, and save to DB
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    // await db.user.create({ data: { ... } });
-    
-    console.log('Artisan Registered:', { name, email, specialty });
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await sql`
+      INSERT INTO artisans (name, email, password, specialty, location)
+      VALUES (${name}, ${email}, ${hashedPassword}, ${specialty}, ${location})
+    `;
     
   } catch (error) {
+    console.error('Database Error:', error);
     return {
-      message: 'An error occurred while creating your account.',
+      message: 'Database Error: Failed to create user account. The email might already be in use.',
     };
   }
 
-  // 4. On success, redirect the user
-  redirect('/artisans/dashboard');
+  redirect('/auth/login');
 }

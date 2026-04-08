@@ -14,15 +14,13 @@ export const SignupFormSchema = z.object({
     location: z.string().min(2, { message: 'Location is required.' }).trim(),
 });
 
-export type FormState =
-  | {
-      errors?: {
-        name?: string[];
-        email?: string[];
-        password?: string[];
-        specialty?: string[];
-        location?: string[];
-      };
-      message?: string | null;
-    }
-  | undefined;
+export type FormState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+    specialty?: string[];
+    location?: string[];
+  };
+  message?: string | null;
+};
