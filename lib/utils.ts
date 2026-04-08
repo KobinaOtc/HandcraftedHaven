@@ -25,3 +25,5 @@ export function generateStars(rating: number): string {
   const empty = 5 - full - (hasHalf ? 1 : 0);
   return "★".repeat(full) + (hasHalf ? "½" : "") + "☆".repeat(empty);
 }
+
+
