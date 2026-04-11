@@ -4,6 +4,8 @@
 import { SignupFormSchema, FormState } from '@/lib/definitions';
 import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
 
 // Note the added : Promise<FormState> to enforce strict typing
@@ -41,4 +43,26 @@ export async function registerArtisan(state: FormState, formData: FormData): Pro
   }
 
   redirect('/auth/login');
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    // This calls the NextAuth credentials provider we set up in auth.ts
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials. Please check your email and password.';
+        default:
+          return 'Something went wrong while trying to log in.';
+      }
+    }
+    // Next.js redirect throws an error under the hood, so we MUST throw the error 
+    // here if it's not an AuthError, otherwise the redirect won't work!
+    throw error;
+  }
 }
