@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { auth } from "@/auth";
 import bcrypt from 'bcrypt';
 
 // Note the added : Promise<FormState> to enforce strict typing
@@ -51,7 +52,7 @@ export async function authenticate(
 ) {
   try {
     // This calls the NextAuth credentials provider we set up in auth.ts
-    await signIn('credentials', formData);
+    await signIn('credentials', formData, { redirectTo: '/artisans/dashboard' });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -61,8 +62,37 @@ export async function authenticate(
           return 'Something went wrong while trying to log in.';
       }
     }
-    // Next.js redirect throws an error under the hood, so we MUST throw the error 
-    // here if it's not an AuthError, otherwise the redirect won't work!
     throw error;
   }
+}
+
+export async function createProduct(state: any, formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const validatedFields = ProductFormSchema.safeParse({
+    name: formData.get("name"),
+    price: formData.get("price"),
+    category: formData.get("category"),
+    description: formData.get("description"),
+    stock: formData.get("stock"),
+    imageUrl: formData.get("imageUrl"),
+  });
+
+  if (!validatedFields.success) {
+    return { errors: validatedFields.error.flatten().fieldErrors };
+  }
+
+  const { name, price, category, description, stock, imageUrl } = validatedFields.data;
+
+  try {
+    await sql`
+      INSERT INTO products (artisan_email, name, price, category, description, stock, image_url)
+      VALUES (${session.user.email}, ${name}, ${price}, ${category}, ${description}, ${stock}, ${imageUrl})
+    `;
+  } catch (e) {
+    return { message: "Database Error: Failed to Create Product." };
+  }
+
+  redirect("/artisans/dashboard");
 }

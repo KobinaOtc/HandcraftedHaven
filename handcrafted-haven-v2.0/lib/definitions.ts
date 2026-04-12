@@ -24,3 +24,12 @@ export type FormState = {
   };
   message?: string | null;
 };
+
+export const ProductFormSchema = z.object({
+  name: z.string().min(2, "Product name is required"),
+  price: z.coerce.number().gt(0, "Price must be greater than 0"),
+  category: z.string().min(1, "Please select a category"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  stock: z.coerce.number().int().min(1, "Stock must be at least 1"),
+  imageUrl: z.string().url("Please upload an image"),
+});
