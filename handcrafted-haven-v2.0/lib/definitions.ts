@@ -25,6 +25,18 @@ export type FormState = {
   message?: string | null;
 };
 
+export type ProductFormState = {
+  errors?: {
+    name?: string[];
+    price?: string[];
+    category?: string[];
+    description?: string[];
+    stock?: string[];
+    imageUrl?: string[];
+  };
+  message?: string | null; // Use null here to avoid the "string | undefined" mismatch
+};
+
 export const ProductFormSchema = z.object({
   name: z.string().min(2, "Product name is required"),
   price: z.coerce.number().gt(0, "Price must be greater than 0"),

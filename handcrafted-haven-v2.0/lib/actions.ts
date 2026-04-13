@@ -1,7 +1,7 @@
 // in lib/actions.ts
 'use server';
 
-import { SignupFormSchema, FormState } from '@/lib/definitions';
+import { SignupFormSchema, FormState, ProductFormSchema, ProductFormState } from '@/lib/definitions';
 import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
 import { signIn } from '@/auth';
@@ -66,7 +66,10 @@ export async function authenticate(
   }
 }
 
-export async function createProduct(state: any, formData: FormData) {
+export async function createProduct(
+  state: ProductFormState, 
+  formData: FormData
+): Promise<ProductFormState> {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
@@ -80,7 +83,10 @@ export async function createProduct(state: any, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    return { errors: validatedFields.error.flatten().fieldErrors };
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Product.',
+    };
   }
 
   const { name, price, category, description, stock, imageUrl } = validatedFields.data;

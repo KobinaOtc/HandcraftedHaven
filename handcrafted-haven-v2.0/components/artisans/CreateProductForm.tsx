@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { createProduct } from "@/lib/actions";
+import { ProductFormState } from "@/lib/definitions";
 import { CldUploadWidget } from "next-cloudinary";
 import { ImagePlus, Package, Tag, Info } from "lucide-react";
 
 export default function CreateProductForm() {
   const [imageUrl, setImageUrl] = useState("");
-  const [state, dispatch] = useFormState(createProduct, { message: null, errors: {} });
+
+  const initialState: ProductFormState = { 
+    message: null, 
+    errors: {} 
+  };
+
+  const [state, dispatch] = useFormState(createProduct, initialState);
 
   return (
     <form action={dispatch} className="space-y-6">
