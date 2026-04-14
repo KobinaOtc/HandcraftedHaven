@@ -3,20 +3,39 @@ import { sql } from "@vercel/postgres";
 import { ProductCard } from "@/components/ui/ProductCard";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { Product } from "@/lib/definitions";
 
 export default async function DashboardPage() {
   const session = await auth();
   const artisanEmail = session?.user?.email;
 
-  // Fetch only products belonging to this specific artisan
-  const { rows: products } = await sql`
-    SELECT * FROM products 
+  // // Fetch only products belonging to this specific artisan
+  // const { rows: products } = await sql`
+  //   SELECT * FROM products 
+  //   WHERE artisan_email = ${artisanEmail}
+  //   ORDER BY created_at DESC
+  // `;
+
+  const result = await sql`
+    SELECT 
+      id, 
+      artisan_email, 
+      name, 
+      price, 
+      category, 
+      description, 
+      stock, 
+      image_url, 
+      created_at
+    FROM products 
     WHERE artisan_email = ${artisanEmail}
     ORDER BY created_at DESC
   `;
 
+  const products = result.rows as unknown as Product[];
+
   return (
-    <div className="p-8">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-12 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-bark">Your Product Catalog</h1>
         <Link 

@@ -1,14 +1,15 @@
 import Image from "next/image";
 import { Tag, Package, MapPin } from "lucide-react";
+import { Product } from "@/lib/definitions";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image_url: string;
-  description?: string;
-}
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   category: string;
+//   image_url: string;
+//   description?: string;
+// }
 
 export function ProductCard({ product }: { product: Product }) {
   return (
