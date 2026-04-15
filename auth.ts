@@ -3,7 +3,7 @@ import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { sql } from '@vercel/postgres';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Helper function to fetch the artisan from Vercel Postgres
 async function getUser(email: string) {
