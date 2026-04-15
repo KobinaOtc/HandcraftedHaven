@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { products } from "@/lib/data";
-import ProductCard from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/ui/ProductCard";
 
 export default function FeaturedProducts() {
   const featured = products.filter((p) => p.isFeatured).slice(0, 4);
@@ -30,13 +30,26 @@ export default function FeaturedProducts() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featured.map((product, i) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              className={`animate-fade-up delay-${(i + 1) * 100}`}
-            />
-          ))}
+          {featured.map((product: any, i: number) => {
+            // ADAPTER: Format the static data for the new DB schema
+            const dbFormattedProduct = {
+              ...product,
+              image_url: product.image || "", 
+              artisan_email: product.artisan || "artisan@haven.com",
+              stock: product.stock || 1,
+              description: product.description || null,
+            };
+
+            return (
+              <ProductCard
+                key={product.id}
+                product={dbFormattedProduct}
+                // Note: The className prop was removed here because ProductCard 
+                // doesn't explicitly accept a className in its interface. 
+                // If you want animations, wrap it in a div!
+              />
+            );
+          })}
         </div>
 
         <div className="mt-10 text-center md:hidden">

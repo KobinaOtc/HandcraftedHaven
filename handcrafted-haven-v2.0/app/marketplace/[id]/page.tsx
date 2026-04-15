@@ -261,9 +261,20 @@ export default function ProductDetailPage({
               You might also love
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+              {related.map((p: any) => {
+                // ADAPTER: Format the related products to match the new DB schema
+                const dbFormattedRelated = {
+                  ...p,
+                  image_url: p.image || "", 
+                  artisan_email: p.artisan || "artisan@haven.com",
+                  stock: p.stock || 1,
+                  description: p.description || null,
+                };
+
+                return (
+                  <ProductCard key={p.id} product={dbFormattedRelated} />
+                );
+              })}
             </div>
           </div>
         )}

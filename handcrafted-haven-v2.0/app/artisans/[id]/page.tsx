@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { MapPin, Star, Package, Calendar, Award } from "lucide-react";
 import { artisans, products } from "@/lib/data";
-import ProductCard from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/ui/ProductCard";
 import { formatNumber } from "@/lib/utils";
 import { Metadata } from "next";
 
