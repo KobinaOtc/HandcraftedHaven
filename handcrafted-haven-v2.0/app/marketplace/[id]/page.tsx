@@ -19,7 +19,7 @@ import {
 import { products } from "@/lib/data";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
-import ProductCard from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/ui/ProductCard";
 import { useState } from "react";
 
 export default function ProductDetailPage({
@@ -39,7 +39,17 @@ export default function ProductDetailPage({
     .slice(0, 4);
 
   const handleAdd = () => {
-    addItem(product, quantity);
+    // Format the static data to match the database schema
+    const dbFormattedProduct = {
+      ...product,
+      id: product.id,
+      image_url: product.image, // Map old image to new image_url
+      artisan_email: product.artisan, // Map old artisan to email
+      stock: product.stock || 1,
+      description: product.description || null,
+    };
+
+    addItem(dbFormattedProduct, quantity); // Pass the formatted product!
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

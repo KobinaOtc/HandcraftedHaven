@@ -71,7 +71,7 @@ export default function CartDrawer() {
               >
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
                   <Image
-                    src={item.product.image}
+                    src={item.product.image_url || "/placeholder.jpg"} // Updated to image_url
                     alt={item.product.name}
                     fill
                     className="object-cover"
@@ -82,7 +82,7 @@ export default function CartDrawer() {
                     {item.product.name}
                   </p>
                   <p className="font-body text-xs text-stone-mid mb-3">
-                    by {item.product.artisan}
+                    by {item.product.artisan_email} {/* Updated to artisan_email */}
                   </p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 bg-cream-100 rounded-full px-1 py-1">

@@ -7,7 +7,13 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { Product, CartItem } from "@/lib/data";
+// import { Product, CartItem } from "@/lib/data";
+import { Product } from "@/lib/definitions";
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 interface CartContextType {
   items: CartItem[];
