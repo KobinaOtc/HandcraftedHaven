@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { products } from "@/lib/data";
-import { ProductCard } from "@/components/ui/ProductCard";
+// 1. Ensure we are using the named import for ProductCard
+import { ProductCard } from "@/components/ui/ProductCard"; 
+// 2. Import our live database fetcher
+import { getAllProducts } from "@/lib/data-fetch"; 
 
-export default function FeaturedProducts() {
-  const featured = products.filter((p) => p.isFeatured).slice(0, 4);
+// 3. Make the component async!
+export default async function FeaturedProducts() {
+  // 4. Fetch the live data and slice the first 4 newest items
+  const allProducts = await getAllProducts();
+  const featured = allProducts.slice(0, 4);
 
   return (
     <section className="py-24 bg-cream-50">
@@ -15,9 +20,10 @@ export default function FeaturedProducts() {
             <p className="font-body text-xs font-600 text-terracotta-500 uppercase tracking-widest mb-3">
               Curated Selection
             </p>
+            {/* I changed this text slightly since we removed the manual "isFeatured" boolean */}
             <h2 className="font-display text-4xl md:text-5xl font-700 text-bark leading-tight">
-              Featured Pieces
-            </h2>
+              Newest Additions
+            </h2> 
           </div>
           <Link
             href="/marketplace"
@@ -30,26 +36,13 @@ export default function FeaturedProducts() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featured.map((product: any, i: number) => {
-            // ADAPTER: Format the static data for the new DB schema
-            const dbFormattedProduct = {
-              ...product,
-              image_url: product.image || "", 
-              artisan_email: product.artisan || "artisan@haven.com",
-              stock: product.stock || 1,
-              description: product.description || null,
-            };
-
-            return (
-              <ProductCard
-                key={product.id}
-                product={dbFormattedProduct}
-                // Note: The className prop was removed here because ProductCard 
-                // doesn't explicitly accept a className in its interface. 
-                // If you want animations, wrap it in a div!
-              />
-            );
-          })}
+          {/* 5. ADAPTER REMOVED! The live data maps perfectly to ProductCard */}
+          {featured.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
+          ))}
         </div>
 
         <div className="mt-10 text-center md:hidden">
