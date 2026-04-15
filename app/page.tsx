@@ -5,6 +5,8 @@ import FeaturedArtisans from "@/components/sections/FeaturedArtisans";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import NewsletterSection from "@/components/sections/NewsletterSection";
 
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   return (
     <>

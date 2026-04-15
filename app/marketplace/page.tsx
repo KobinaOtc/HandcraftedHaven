@@ -1,6 +1,8 @@
 import { getAllProducts } from "@/lib/data-fetch";
 import MarketplaceClient from "./MarketplaceClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Shop Handcrafted Items | Handcrafted Haven",
   description: "Discover unique handcrafted treasures from artisans worldwide.",
