@@ -124,23 +124,23 @@ export default function ArtisanProfilePage({
           </div>
         </div>
 
-        {/* Products */}
-        <div className="pb-16">
-          <h2 className="font-display text-2xl font-700 text-bark mb-8">
-            {artisan.name.split(" ")[0]}&apos;s Collection
-          </h2>
-          {artisanProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {artisanProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <p className="font-body text-base text-stone-mid">
-              No products listed yet.
-            </p>
-          )}
-        </div>
+        {/* Products Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {artisanProducts.map((product: any) => {
+              // ADAPTER: Format the static data to match the new DB schema
+              const dbFormattedProduct = {
+                ...product,
+                image_url: product.image || "", 
+                artisan_email: product.artisan || "artisan@haven.com",
+                stock: product.stock || 1,
+                description: product.description || null,
+              };
+
+              return (
+                <ProductCard key={product.id} product={dbFormattedProduct} />
+              );
+            })}
+          </div>
       </div>
     </div>
   );
