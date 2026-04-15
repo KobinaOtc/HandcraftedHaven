@@ -3,6 +3,7 @@
 
 import { SignupFormSchema, FormState, ProductFormSchema, ProductFormState } from '@/lib/definitions';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { sql } from '@vercel/postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
@@ -66,13 +67,11 @@ export async function authenticate(
   }
 }
 
-export async function createProduct(
-  state: ProductFormState, 
-  formData: FormData
-): Promise<ProductFormState> {
+export async function createProduct(state: ProductFormState, formData: FormData): Promise<ProductFormState> {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
+  // 1. Validate with Zod
   const validatedFields = ProductFormSchema.safeParse({
     name: formData.get("name"),
     price: formData.get("price"),
@@ -91,14 +90,20 @@ export async function createProduct(
 
   const { name, price, category, description, stock, imageUrl } = validatedFields.data;
 
+  // 2. Database Insertion
   try {
     await sql`
       INSERT INTO products (artisan_email, name, price, category, description, stock, image_url)
       VALUES (${session.user.email}, ${name}, ${price}, ${category}, ${description}, ${stock}, ${imageUrl})
     `;
-  } catch (e) {
-    return { message: "Database Error: Failed to Create Product." };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { message: 'Database Error: Failed to Create Product.' };
   }
 
-  redirect("/artisans/dashboard");
+  // 3. Clear the dashboard cache so the new product shows up immediately
+  revalidatePath('/artisans/dashboard');
+  
+  // 4. Redirect - THIS MUST BE OUTSIDE THE TRY/CATCH!
+  redirect('/artisans/dashboard');
 }
