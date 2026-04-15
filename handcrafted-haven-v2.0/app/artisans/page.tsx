@@ -3,6 +3,8 @@ import { getAllArtisans } from "@/lib/data-fetch";
 import ArtisanCard from "@/components/ui/ArtisanCard";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Artisans",
   description: "Meet the talented artisans behind Handcrafted Haven's unique pieces.",
