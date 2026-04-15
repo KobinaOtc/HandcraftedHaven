@@ -57,3 +57,13 @@ export const ProductFormSchema = z.object({
   stock: z.coerce.number().int().min(1, "Stock must be at least 1"),
   imageUrl: z.string().url("Please upload an image"),
 });
+
+export interface ArtisanProfile {
+  id: string;
+  name: string;
+  email: string;
+  specialty: string;
+  location: string;
+  bio: string | null;
+  // Notice: The password field is strictly omitted here!
+}
