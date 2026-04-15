@@ -4,7 +4,8 @@ import { useState, useMemo, useEffect, useRef, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, ChevronDown, X } from "lucide-react";
 import { products, categories } from "@/lib/data";
-import ProductCard from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/ui/ProductCard";
+import { Product } from "@/lib/definitions";
 import { cn } from "@/lib/utils";
 
 const sortOptions = [
@@ -104,6 +105,7 @@ export default function MarketplacePage() {
     return result;
   }, [search, selectedCategory, sort, priceRange]);
 
+  
   return (
     <div className="min-h-screen bg-cream-50 pt-20">
       {/* Page Header */}
@@ -275,9 +277,35 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {/* Product Grid */}
+            {filtered.length === 0 ? (
+              <div className="text-center py-24">
+                <span className="text-5xl block mb-4">🔍</span>
+                <p className="font-display text-xl font-600 text-bark mb-2">
+                  No products found
+                </p>
+                <p className="font-body text-sm text-stone-mid">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filtered.map((product: any) => {
+                  // ADAPTER: Format the old static data to match the new database Product interface
+                  const dbFormattedProduct = {
+                    ...product,
+                    image_url: product.image || product.imageSrc || "", // Fallback to grab the old image property
+                    artisan_email: "artisan@haven.com", // Placeholder since old data lacks emails
+                    stock: product.stock || 1,
+                    description: product.description || null,
+                  };
+
+                  return (
+                    <ProductCard key={product.id} product={dbFormattedProduct} />
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
