@@ -276,20 +276,20 @@ export default function MarketplacePage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* Product Grid */}
-            {filtered.length === 0 ? (
-              <div className="text-center py-24">
-                <span className="text-5xl block mb-4">🔍</span>
-                <p className="font-display text-xl font-600 text-bark mb-2">
-                  No products found
-                </p>
-                <p className="font-body text-sm text-stone-mid">
-                  Try adjusting your search or filters
-                </p>
-              </div>
+        <div>
+          {/* Product Grid */}
+          {filtered.length === 0 ? (
+            <div className="text-center py-24">
+              <span className="text-5xl block mb-4">🔍</span>
+              <p className="font-display text-xl font-600 text-bark mb-2">
+                No products found
+              </p>
+              <p className="font-body text-sm text-stone-mid">
+                Try adjusting your search or filters
+              </p>
+            </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filtered.map((product: any) => {
                   // ADAPTER: Format the old static data to match the new database Product interface
                   const dbFormattedProduct = {

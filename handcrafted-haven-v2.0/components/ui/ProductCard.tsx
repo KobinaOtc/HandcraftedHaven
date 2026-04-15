@@ -1,21 +1,13 @@
 import Image from "next/image";
-import { Tag, Package, MapPin } from "lucide-react";
+import { Tag, Package } from "lucide-react";
 import { Product } from "@/lib/definitions";
-
-// interface Product {
-//   id: string;
-//   name: string;
-//   price: number;
-//   category: string;
-//   image_url: string;
-//   description?: string;
-// }
 
 export function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-cream-200 overflow-hidden hover:shadow-md transition-shadow group">
+    <div className="w-full h-full flex flex-col bg-white rounded-2xl shadow-sm border border-cream-200 overflow-hidden hover:shadow-md transition-shadow group">
       {/* Product Image */}
-      <div className="relative h-48 w-full bg-cream-50 overflow-hidden">
+      {/* Note the shrink-0 added here so the image height doesn't collapse */}
+      <div className="relative h-48 w-full bg-cream-50 overflow-hidden shrink-0">
         {product.image_url ? (
           <Image
             src={product.image_url}
@@ -34,7 +26,8 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Product Info */}
-      <div className="p-5">
+      {/* Added flex-grow so this section expands to push the footer down */}
+      <div className="p-5 flex flex-col flex-grow">
         <div className="flex items-center gap-1.5 mb-2">
           <Tag className="w-3.5 h-3.5 text-terracotta-500" />
           <span className="text-[10px] uppercase tracking-wider font-700 text-stone-400">
@@ -46,17 +39,18 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         
-        <p className="text-stone-dark text-sm line-clamp-2 font-body leading-relaxed mb-4">
+        {/* Added flex-grow here to consume empty vertical space */}
+        <p className="text-stone-dark text-sm line-clamp-2 font-body leading-relaxed mb-4 flex-grow">
           {product.description || "No description provided for this handcrafted item."}
         </p>
 
-        <div className="flex items-center justify-between pt-4 border-t border-cream-100">
+        <div className="flex items-center justify-between pt-4 border-t border-cream-100 mt-auto">
           <div className="flex items-center gap-1 text-stone-400">
             <Package className="w-4 h-4" />
             <span className="text-xs">In Stock</span>
           </div>
           <button className="text-xs font-600 text-terracotta-500 hover:text-terracotta-600 transition-colors uppercase tracking-tight">
-            Edit Details
+            View Details
           </button>
         </div>
       </div>
