@@ -9,11 +9,9 @@ import { Product } from "@/lib/definitions";
 import { cn } from "@/lib/utils";
 
 const sortOptions = [
-  { value: "featured", label: "Featured" },
+  { value: "newest", label: "Newest First" },
   { value: "price-low", label: "Price: Low to High" },
   { value: "price-high", label: "Price: High to Low" },
-  { value: "rating", label: "Highest Rated" },
-  { value: "newest", label: "Newest First" },
 ];
 
 export default function MarketplaceClient({
@@ -77,16 +75,17 @@ export default function MarketplaceClient({
   const filtered = useMemo(() => {
     let result = [...products];
 
+    // 1. Fix Line 84: Search by artisan_email instead of artisan
     if (search) {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(search.toLowerCase()) ||
-          p.artisan.toLowerCase().includes(search.toLowerCase()) ||
+          p.artisan_email.toLowerCase().includes(search.toLowerCase()) ||
           p.category.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== "All") {
       result = result.filter((p) => p.category === selectedCategory);
     }
 
@@ -94,6 +93,7 @@ export default function MarketplaceClient({
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
     );
 
+    // 2. Fix Lines 105-111: Remove sorting options that rely on non-existent DB columns
     switch (sort) {
       case "price-low":
         result.sort((a, b) => a.price - b.price);
@@ -101,18 +101,20 @@ export default function MarketplaceClient({
       case "price-high":
         result.sort((a, b) => b.price - a.price);
         break;
-      case "rating":
-        result.sort((a, b) => b.rating - a.rating);
-        break;
+      // "rating" and "isNew" and "isFeatured" are removed because they don't exist in the DB.
+      // We will fallback to sorting by newest (created_at) by default.
       case "newest":
-        result = result.filter((p) => p.isNew).concat(result.filter((p) => !p.isNew));
-        break;
       default:
-        result = result.filter((p) => p.isFeatured).concat(result.filter((p) => !p.isFeatured));
+        result.sort((a, b) => {
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return dateB - dateA; // Sort descending (newest first)
+        });
+        break;
     }
 
     return result;
-  }, [search, selectedCategory, sort, priceRange]);
+  }, [search, selectedCategory, sort, priceRange, products]);
 
   
   return (
@@ -197,10 +199,10 @@ export default function MarketplaceClient({
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => setSelectedCategory(null)}
+                    onClick={() => setSelectedCategory("All")} // Change null to "All"
                     className={cn(
                       "px-3 py-1.5 rounded-full text-xs font-500 transition-colors border",
-                      !selectedCategory
+                      selectedCategory === "All" // Check against "All"
                         ? "bg-bark text-cream-50 border-bark"
                         : "bg-white text-bark border-cream-200 hover:border-terracotta-400"
                     )}
@@ -210,7 +212,7 @@ export default function MarketplaceClient({
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id === selectedCategory ? null : cat.id)}
+                      onClick={() => setSelectedCategory(cat.id === selectedCategory ? "All" : cat.id)}
                       className={cn(
                         "px-3 py-1.5 rounded-full text-xs font-500 transition-colors border",
                         selectedCategory === cat.id
@@ -246,13 +248,15 @@ export default function MarketplaceClient({
         )}
 
         {/* Active Filters */}
-        {(selectedCategory || search) && (
+        {/* Make sure we only show the badge if it's NOT "All" */}
+        {(selectedCategory !== "All" || search) && (
           <div className="flex items-center gap-2 mb-6">
             <span className="font-body text-xs text-stone-mid">Active filters:</span>
-            {selectedCategory && (
+            {selectedCategory !== "All" && (
               <span className="flex items-center gap-1 px-3 py-1 bg-cream-100 rounded-full text-xs text-bark">
-                {categories.find((c) => c.id === selectedCategory)?.name}
-                <button onClick={() => setSelectedCategory(null)}>
+                {categories.find((c) => c.id === selectedCategory)?.name || selectedCategory}
+                {/* Change null to "All" */}
+                <button onClick={() => setSelectedCategory("All")}>
                   <X className="w-3 h-3" />
                 </button>
               </span>

@@ -1,4 +1,5 @@
-import { artisans } from "@/lib/data";
+// 1. Remove the static data import and bring in your new live database function
+import { getAllArtisans } from "@/lib/data-fetch";
 import ArtisanCard from "@/components/ui/ArtisanCard";
 import { Metadata } from "next";
 
@@ -7,7 +8,11 @@ export const metadata: Metadata = {
   description: "Meet the talented artisans behind Handcrafted Haven's unique pieces.",
 };
 
-export default function ArtisansPage() {
+// 2. Make the component 'async' so it can await the database fetch
+export default async function ArtisansPage() {
+  // 3. Fetch the live artisans securely from Vercel Postgres!
+  const dbArtisans = await getAllArtisans();
+
   return (
     <div className="min-h-screen bg-cream-50 pt-20">
       {/* Header */}
@@ -32,9 +37,23 @@ export default function ArtisansPage() {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {artisans.map((artisan) => (
-            <ArtisanCard key={artisan.id} artisan={artisan} />
-          ))}
+          {/* 4. Map over the LIVE database artisans instead of the static ones */}
+          {dbArtisans.map((artisan: any) => {
+            
+            // ADAPTER: Safely bridge the DB schema to the UI Card's expectations
+            const formattedArtisan = {
+              ...artisan,
+              // Provide fallbacks for the UI since the DB doesn't store these yet
+              image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+              rating: 5.0, 
+              reviews: 12,  
+              sales: 150, // <-- ADD THIS LINE to prevent the .toString() crash!
+            };
+
+            return (
+              <ArtisanCard key={artisan.id} artisan={formattedArtisan} />
+            );
+          })}
         </div>
 
         {/* CTA to sell */}
@@ -48,7 +67,7 @@ export default function ArtisansPage() {
             value handcrafted quality.
           </p>
           <a
-            href="/sell"
+            href="/auth/register" // Note: I updated this to point to your actual register route!
             className="inline-flex items-center gap-2 px-8 py-4 bg-terracotta-500 text-white font-500 rounded-full hover:bg-terracotta-600 transition-colors"
           >
             Start Selling
