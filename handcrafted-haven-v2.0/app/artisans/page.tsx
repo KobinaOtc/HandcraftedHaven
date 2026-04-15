@@ -43,11 +43,13 @@ export default async function ArtisansPage() {
             // ADAPTER: Safely bridge the DB schema to the UI Card's expectations
             const formattedArtisan = {
               ...artisan,
-              // Provide fallbacks for the UI since the DB doesn't store these yet
-              image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+              // Match exact property names expected by ArtisanCard.tsx
+              coverImage: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
+              avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
               rating: 5.0, 
-              reviews: 12,  
-              sales: 150, // <-- ADD THIS LINE to prevent the .toString() crash!
+              totalProducts: 12,  
+              totalSales: 150, // Fixed: Changed from 'sales' to 'totalSales'
+              badges: ["Handmade", "Eco-friendly"], // Added: Prevents .map() crash
             };
 
             return (

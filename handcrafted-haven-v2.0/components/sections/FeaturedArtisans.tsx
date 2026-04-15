@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { artisans } from "@/lib/data";
 import ArtisanCard from "@/components/ui/ArtisanCard";
+// 1. Import our live database fetcher
+import { getAllArtisans } from "@/lib/data-fetch"; 
 
-export default function FeaturedArtisans() {
-  const featured = artisans.filter((a) => a.featured);
+// 2. Make the component async!
+export default async function FeaturedArtisans() {
+  // 3. Fetch the live artisans and grab the first 3
+  const allArtisans = await getAllArtisans();
+  const featured = allArtisans.slice(0, 3);
 
   return (
     <section className="py-24 bg-cream-50">
@@ -28,14 +32,16 @@ export default function FeaturedArtisans() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featured.map((artisan: any, i: number) => {
-            // ADAPTER: Add the fallbacks here too!
+          {/* 4. We map over the live data, but keep the safe UI Adapter! */}
+          {featured.map((artisan: any) => {
             const dbFormattedArtisan = {
               ...artisan,
-              image: artisan.image || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+              coverImage: artisan.coverImage || "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
+              avatar: artisan.avatar || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
               rating: artisan.rating || 5.0,
-              reviews: artisan.reviews || 12,
-              sales: artisan.sales || 150, // <-- The crucial fix
+              totalProducts: artisan.totalProducts || 12,
+              totalSales: artisan.totalSales || 150, 
+              badges: artisan.badges || ["Handmade", "Top Seller"], 
             };
 
             return (
