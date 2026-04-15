@@ -63,24 +63,30 @@ export default function CartPage() {
               >
                 <div className="relative w-28 h-28 rounded-2xl overflow-hidden flex-shrink-0">
                   <Image
-                    src={item.product.image}
+                    // FIXED: Changed .image to .image_url
+                    src={item.product.image_url || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80"}
                     alt={item.product.name}
                     fill
                     className="object-cover"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/marketplace/${item.product.id}`}
-                    className="font-display text-lg font-600 text-bark hover:text-terracotta-500 transition-colors block truncate"
-                  >
-                    {item.product.name}
-                  </Link>
-                  <p className="font-body text-sm text-stone-mid mb-1">
-                    by {item.product.artisan}
-                  </p>
-                  <p className="font-body text-xs text-stone-mid mb-4">
-                    📍 {item.product.location}
+                  <div className="flex justify-between items-start gap-4 mb-1">
+                    <h3 className="font-display text-lg font-600 text-bark truncate">
+                      <Link href={`/marketplace/${item.product.id}`} className="hover:text-terracotta-500 transition-colors">
+                        {item.product.name}
+                      </Link>
+                    </h3>
+                    <button
+                      onClick={() => removeItem(item.product.id)}
+                      className="text-stone-400 hover:text-red-500 transition-colors p-1"
+                    >
+                      <Trash2 className="w-5 h-5" strokeWidth={1.5} />
+                    </button>
+                  </div>
+                  {/* FIXED: Changed .artisan to .artisan_email */}
+                  <p className="font-body text-sm text-stone-mid mb-2">
+                    by {item.product.artisan_email}
                   </p>
 
                   <div className="flex items-center justify-between">
