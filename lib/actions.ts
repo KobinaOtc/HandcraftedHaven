@@ -5,9 +5,8 @@ import { SignupFormSchema, FormState, ProductFormSchema, ProductFormState } from
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { sql } from '@vercel/postgres';
-import { signIn } from '@/auth';
+import { signIn, signOut, auth } from '@/auth';
 import { AuthError } from 'next-auth';
-import { auth } from "@/auth";
 import bcrypt from 'bcryptjs';
 
 // Note the added : Promise<FormState> to enforce strict typing
@@ -18,6 +17,7 @@ export async function registerArtisan(state: FormState, formData: FormData): Pro
     password: formData.get('password'),
     specialty: formData.get('specialty'),
     location: formData.get('location'),
+    avatar: formData.get('avatar'), // Grab the new avatar field
   });
 
   if (!validatedFields.success) {
@@ -27,21 +27,23 @@ export async function registerArtisan(state: FormState, formData: FormData): Pro
     };
   }
 
-  const { name, email, password, specialty, location } = validatedFields.data;
+  // Extract avatar alongside the rest
+  const { name, email, password, specialty, location, avatar } = validatedFields.data;
+  // Provide a fallback image if they didn't upload one
+  const finalAvatar = avatar || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80";
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Update SQL to include the avatar column
     await sql`
-      INSERT INTO artisans (name, email, password, specialty, location)
-      VALUES (${name}, ${email}, ${hashedPassword}, ${specialty}, ${location})
+      INSERT INTO artisans (name, email, password, specialty, location, avatar)
+      VALUES (${name}, ${email}, ${hashedPassword}, ${specialty}, ${location}, ${finalAvatar})
     `;
     
   } catch (error) {
     console.error('Database Error:', error);
-    return {
-      message: 'Database Error: Failed to create user account. The email might already be in use.',
-    };
+    return { message: 'Database Error: Failed to create user account. The email might already be in use.' };
   }
 
   redirect('/auth/login');
@@ -106,4 +108,13 @@ export async function createProduct(state: ProductFormState, formData: FormData)
   
   // 4. Redirect - THIS MUST BE OUTSIDE THE TRY/CATCH!
   redirect('/artisans/dashboard');
+}
+
+export async function logout() {
+  await signOut({ redirectTo: '/auth/login' });
+}
+
+export async function checkIsLoggedIn() {
+  const session = await auth();
+  return !!session?.user;
 }
