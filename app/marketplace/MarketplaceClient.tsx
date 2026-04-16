@@ -14,6 +14,17 @@ const sortOptions = [
   { value: "price-high", label: "Price: High to Low" },
 ];
 
+const CATEGORIES = [
+  "All",
+  "Pottery & Ceramics",
+  "Textiles & Weaving",
+  "Jewelry",
+  "Woodwork",
+  "Candles & Soaps",
+  "Fine Art & Prints",
+  "Other"
+];
+
 export default function MarketplaceClient({
   products, // We now receive live products as a prop!
   initialCategory,
@@ -34,6 +45,20 @@ export default function MarketplaceClient({
   const [sort, setSort] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+
+  const filteredProducts = products.filter((product) => {
+    // 1. Check Category
+    const matchesCategory =
+      selectedCategory === "All" || 
+      product.category.includes(selectedCategory); // Uses .includes() to ignore the emoji in the DB!
+
+    // 2. Check Search Query
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   useEffect(() => {
     if (querySearch) {
@@ -198,31 +223,21 @@ export default function MarketplaceClient({
                   Category
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedCategory("All")} // Change null to "All"
-                    className={cn(
-                      "px-3 py-1.5 rounded-full text-xs font-500 transition-colors border",
-                      selectedCategory === "All" // Check against "All"
-                        ? "bg-bark text-cream-50 border-bark"
-                        : "bg-white text-bark border-cream-200 hover:border-terracotta-400"
-                    )}
-                  >
-                    All
-                  </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id === selectedCategory ? "All" : cat.id)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full text-xs font-500 transition-colors border",
-                        selectedCategory === cat.id
-                          ? "bg-bark text-cream-50 border-bark"
-                          : "bg-white text-bark border-cream-200 hover:border-terracotta-400"
-                      )}
-                    >
-                      {cat.icon} {cat.name}
-                    </button>
-                  ))}
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {CATEGORIES.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-full text-sm font-500 transition-colors ${
+                          selectedCategory === category
+                            ? "bg-bark text-cream-50"
+                            : "bg-white border border-cream-200 text-stone-dark hover:border-terracotta-500 hover:text-terracotta-500"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

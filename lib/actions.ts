@@ -46,6 +46,11 @@ export async function registerArtisan(state: FormState, formData: FormData): Pro
     return { message: 'Database Error: Failed to create user account. The email might already be in use.' };
   }
 
+  // ADD THESE TWO LINES:
+  // Purge the cache so the new artisan appears immediately on the live site!
+  revalidatePath('/artisans');
+  revalidatePath('/');
+
   redirect('/auth/login');
 }
 
@@ -103,8 +108,11 @@ export async function createProduct(state: ProductFormState, formData: FormData)
     return { message: 'Database Error: Failed to Create Product.' };
   }
 
-  // 3. Clear the dashboard cache so the new product shows up immediately
+  // 3. Clear the caches so the new product shows up immediately
   revalidatePath('/artisans/dashboard');
+  // ADD THESE TWO LINES:
+  revalidatePath('/marketplace');
+  revalidatePath('/');
   
   // 4. Redirect - THIS MUST BE OUTSIDE THE TRY/CATCH!
   redirect('/artisans/dashboard');

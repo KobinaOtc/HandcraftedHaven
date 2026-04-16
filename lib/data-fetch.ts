@@ -1,11 +1,16 @@
 import { sql } from '@vercel/postgres';
 import { Product, ArtisanProfile } from './definitions';
+// 1. IMPORT the Next.js cache bypass function
+import { unstable_noStore as noStore } from 'next/cache'; 
 
 // --------------------------------------------------------
 // PRODUCT QUERIES
 // --------------------------------------------------------
 
 export async function getAllProducts() {
+  // 2. CALL it at the top of the function
+  noStore(); 
+  
   try {
     const data = await sql<Product>`
       SELECT id, artisan_email, name, price, category, description, stock, image_url, created_at 
@@ -20,6 +25,7 @@ export async function getAllProducts() {
 }
 
 export async function getProductById(id: string) {
+  noStore(); // Add here too to ensure fresh detail pages!
   try {
     const data = await sql<Product>`
       SELECT * FROM products 
@@ -33,6 +39,7 @@ export async function getProductById(id: string) {
 }
 
 export async function getProductsByArtisanEmail(email: string) {
+  noStore(); // Add here too!
   try {
     const data = await sql<Product>`
       SELECT * FROM products 
@@ -51,10 +58,10 @@ export async function getProductsByArtisanEmail(email: string) {
 // --------------------------------------------------------
 
 export async function getAllArtisans() {
+  noStore(); // Add here so the artisan directory is always fresh!
   try {
-    // SECURITY: Explicitly naming columns ensures we NEVER select the password
     const data = await sql<ArtisanProfile>`
-      SELECT id, name, email, specialty, location, bio 
+      SELECT id, name, email, specialty, location, bio, avatar 
       FROM artisans 
       ORDER BY name ASC
     `;
@@ -66,9 +73,10 @@ export async function getAllArtisans() {
 }
 
 export async function getArtisanById(id: string) {
+  noStore(); // Add here too!
   try {
     const data = await sql<ArtisanProfile>`
-      SELECT id, name, email, specialty, location, bio 
+      SELECT id, name, email, specialty, location, bio, avatar 
       FROM artisans 
       WHERE id = ${id}
     `;
