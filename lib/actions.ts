@@ -8,7 +8,7 @@ import { sql } from '@vercel/postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import { auth } from "@/auth";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Note the added : Promise<FormState> to enforce strict typing
 export async function registerArtisan(state: FormState, formData: FormData): Promise<FormState> {
