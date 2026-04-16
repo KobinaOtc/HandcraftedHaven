@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { createProduct } from "@/lib/actions";
 import { CldUploadWidget } from "next-cloudinary";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, Package, DollarSign, AlignLeft, Tag } from "lucide-react";
 import { ProductFormState } from "@/lib/definitions";
 
 // 1. We create a separate button component to track the 'pending' state
@@ -84,10 +84,34 @@ export default function CreateProductForm() {
       
       {/* Category, Description, and Stock inputs go here (similar pattern to above) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-1">
-            <label className="text-xs font-600 text-stone-dark uppercase px-1">Category</label>
-            <input name="category" type="text" className="w-full p-3 bg-cream-50 border border-cream-200 rounded-xl outline-none focus:ring-2 focus:ring-terracotta-500" required />
+          {/* Category */}
+        <div>
+          <label className="block text-xs font-600 text-stone-dark uppercase tracking-wider mb-1 px-1">
+            Category
+          </label>
+          <div className="relative">
+            {/* Make sure you have imported Tag from 'lucide-react' at the top if it isn't already! */}
+            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <select
+              name="category"
+              required
+              defaultValue=""
+              className="block w-full pl-10 pr-4 py-2.5 bg-cream-50 border border-cream-200 rounded-xl focus:ring-2 focus:ring-terracotta-500 outline-none text-bark appearance-none"
+            >
+              <option value="" disabled>Select a category...</option>
+              <option value="Pottery & Ceramics">🏺 Pottery & Ceramics</option>
+              <option value="Textiles & Weaving">🧵 Textiles & Weaving</option>
+              <option value="Jewelry">💍 Jewelry</option>
+              <option value="Woodwork">🪵 Woodwork</option>
+              <option value="Candles & Soaps">🕯️ Candles & Soaps</option>
+              <option value="Fine Art & Prints">🎨 Fine Art & Prints</option>
+              <option value="Other">✨ Other</option>
+            </select>
           </div>
+          {state?.errors?.category && (
+            <p className="mt-1 text-xs text-red-500">{state.errors.category[0]}</p>
+          )}
+        </div>
           <div className="space-y-1">
             <label className="text-xs font-600 text-stone-dark uppercase px-1">Stock</label>
             <input name="stock" type="number" defaultValue={1} className="w-full p-3 bg-cream-50 border border-cream-200 rounded-xl outline-none focus:ring-2 focus:ring-terracotta-500" required />

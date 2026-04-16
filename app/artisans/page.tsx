@@ -47,7 +47,7 @@ export default async function ArtisansPage() {
               ...artisan,
               // Match exact property names expected by ArtisanCard.tsx
               coverImage: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
-              avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
+              avatar: artisan.avatar || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
               rating: 5.0, 
               totalProducts: 12,  
               totalSales: 150, // Fixed: Changed from 'sales' to 'totalSales'

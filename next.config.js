@@ -14,6 +14,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
+      {
+        protocol: 'https',
+        hostname: '**', // This wildcard accepts ALL secure image domains
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // This wildcard accepts ALL unsecure image domains
+      },
     ],
   },
   eslint: {
