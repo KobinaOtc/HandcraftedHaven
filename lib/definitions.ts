@@ -12,6 +12,7 @@ export const SignupFormSchema = z.object({
         .trim(),
     specialty: z.string().min(2, { message: 'Specialty is required.' }).trim(),
     location: z.string().min(2, { message: 'Location is required.' }).trim(),
+    avatar: z.string().url({ message: 'Please provide a valid image URL.' }).optional().or(z.literal('')),
 });
 
 export type FormState = {
@@ -21,6 +22,7 @@ export type FormState = {
     password?: string[];
     specialty?: string[];
     location?: string[];
+    avatar?: string[];
   };
   message?: string | null;
 };
